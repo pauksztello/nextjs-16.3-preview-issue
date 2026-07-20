@@ -1,39 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js 16.3.0-preview.6 — cache warming reproduction
 
-## Requirements
+Minimal reproduction for a production-only error that appears on the **first page load** after `next build` + `next start`:
 
-Use bun 1.3.10. Later versions fail to run Payload scripts due to a Lexical circular-import bug.
+```
+Error: Unexpected cache miss after cache warming phase during prerendering.
+
+This is likely caused by non-deterministic arguments that differ between the cache warming phase and the final prerender phase (e.g. unstable array order).
+
+Ensure that arguments passed to cached functions are deterministic.
+```
+
+The build succeeds. The app otherwise works normally. The error only shows once, on the first request to `/` after starting the production server.
+
+
+## Reproduce
 
 ```bash
 bun install
-bun run data/provinces/lithuania/vilniaus-provincija/migrate.ts
+bun run build
+bun run start
 ```
 
-## Getting Started
+Open [http://localhost:3000](http://localhost:3000) (or refresh once). The error appears in the server terminal on that first load.
 
-First, run the development server:
-
-```bash
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
